@@ -2,6 +2,77 @@ Planning for the Elevator Project
 
 ## W4 
 
+### Plan v2
+
+TODO
+- bestemme port logikk ved "i am alive" melding
+
+p2p aspect
+- hvem lever
+- brukes ved slave -> master
+- eskil: master sender melding og slaver acker. Dersom slavene ikke får meldinger fra master så må alle sammen anta at master er død, da blir alle enige om hvem som er neste ved at alle har samme logikken.
+
+master-backup com
+- master sender hele tilstanden
+- nummerer state oppdateringer
+- master sender samme informasjon til alle backups
+- MB broadcasting com skjer på en port (port_MB)
+- eskil: etter det må vel alle slavene 
+- master repiterer nyeste beskjeden sin periodisk
+- epoch: master nummer
+- S_num: nummer på state
+- melding: (epoch, S_num, data)
+- data: HallOrderTable, CabOrderTable
+
+Ny hall order case
+1. Knapp trykkes på en  backup
+2. Backup videresender event til ordreport
+3. Master oppfatter ny ordre og kalkulerer hvem som skal ta den
+4. Master legger ny ordre i sin PotentialState table
+5. Master sender PotentialState til backups
+6. Backups lagrer mottatt beskjed som sin ActiveState. Oppdaterer epoch og S_num.
+7. Heisen som fikk ordre acker på ordre recieve porten tilbake til master
+8. Når heisen får relevant ack oppdaterer den sin ActiveState Table. Da går lyset til master på. 
+
+Backup blir master
+1. master ikke vist livstegn
+2. Hver backup bestemmer ny master med felles regler
+3. Nye master broadcaster med sin nye epoch med S_num = 0, dette skjer på master sin port.
+4. Backups svarer om de er enige eller ikke. Evt svarer de hvem som faktisk skal være master
+5. Dersom master blir motbevist går den til backup
+6. Ellers starter den med master oppgaver
+
+How to clear requests
+- Problem: Backup must inform master that order is cleared, but master will in the meantime still update states, saying that the order is still active
+- Solution 1: The backup who makes the order will not reinitialize its HallOrderTable / CabOrderTable unless (epoch, S_num) > prev (epoch, S_num) indicating a new order actually was called in the floor. 
+
+OrderTable
+- Includes hall requests for all elev
+- Includes cab request for all elev
+- ex: entry (5, 12) = (epoch, S_num) = order
+- ex: entry (0, 0) =  no order
+
+OrderControl (master)
+while new:
+	if new order:
+		ComputeWhichElevator()
+		update PossibleOrderTable()
+		update (epoch, S_num, data) for sending
+		wait for acks
+		-> update ActiveOrderTable()
+		-> start timer for order
+	elif clear order:
+		Check if order can be cleared
+		update ActiveOrderTable
+		update (epoch, S_num, data) for sending
+
+Backup dør
+- ???
+
+SlaveKeeper modulen
+- Nebytt p2p com
+
+
 ### Modules & Variables
 
 Requests // info about the local elevator
