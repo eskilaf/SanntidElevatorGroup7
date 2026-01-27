@@ -1,6 +1,45 @@
 Planning for the Elevator Project
 
+### MODULES AND VARIABLES
+
+Requests (info about the local elevator)
+- LocalOrderTable
+
+NetworkModule (provided network module)
+
+Elevator_IO (interacts with driver)
+- ElevatorStates (floor, direction, etc.)
+- FeasableState
+
+ElevatorMovement (fsm)
+
+OrderController (tables for the elevator)
+- ActiveOrderTable
+- PotentialOrderTable
+- UnassignedOrderList
+- ClearList
+
+RecieveOrders (tables for backup things)(we may drop this)
+
+ConnectedElevators (p2p alive messages)
+- AliveList
+
 ## W5
+
+### Communications
+
+### OrderEvent
+format = (epoch, N, A)
+
+#### M broadcasting
+- i am alive (state)
+#### B broadcasting
+- i am alive (state)
+
+#### Messages from B to M (new order)
+- new order:
+	(")
+
 
 ### Questions 
 - Burde vi snakke om den utdelte heiskoden?
@@ -20,12 +59,16 @@ Planning for the Elevator Project
 -> Moduldiagram                     (lag mot slutten)
 
 
+### case: Init Backup
+- Start program
+- Broadcast "I am alive"
+
 ### Button light contract
 - Solution:
 	- Oppdaterer backups på ny ordre før vi skrur på lyset før ordren er offisiell
 - Sekvens:
 	- Ny ordre kommer inn
-	- Ny ordre deles til amster
+	- Ny ordre deles til master
 	- Master regner hvilken heis
 	- Master sender ut ordre til backups
 	- Backuåps skru på sitt lys når de får ordren
@@ -50,17 +93,17 @@ Må ta hensyn til:
 
 ### Spontanious Crashes
 - Master crasher
-	- Håndteres ved at ny backup blir til master (LAG DIAGRAM)
+	- Håndteres ved at backup blir til master (LAG DIAGRAM)(X)
 	- Se diagram Casper sendte, lag denne i Draw.io
 - Backup crasher
 	- Backup sine hall orders redistribueres og ingen nye ordre til denne
 	- Når backup kommer tilbake får den tilsent sine cab orders 
 	- OrderControl burde deskrive denne situasjonen 
-	- Sekvensdiagram for ny Backup på nettverk (LAG DIAGRAM)
+	- Sekvensdiagram for ny Backup på nettverk (LAG DIAGRAM)(X)
 		- id = ip adresse
 	
 ### Detection og Takeover
-case: Oppdages av slavekeeper at backup er død
+case: Oppdages av slavekeeper at backup er død (LAG DIAGRAM)
 - Heisens hall orders redistribueres, se OrderControl diagram.
 case: Ordren gjennomføres ikke innen tidsfrist
 - Det blir oppdagt og en ny heis blir satt til å ta ordren. 
@@ -175,35 +218,6 @@ Backup dør
 
 SlaveKeeper modulen
 - Nebytt p2p com
-
-
-### Modules & Variables
-
-Requests // info about the local elevator
-- info: Returnerer om det er noen i request i LocalOrderList
-- LocalOrderTable
-
-Timer
-- info: Module for setting timers.
-
-NetworkModule
-- info: Contains the functions to allow easy message passing between the other modules
-
-Elevator
-- info: Interacts with driver
-- ElevatorStates (floor, direction, worldView, etc.)
-
-FSM
-- info: decision making
-
-OrderController // info about all the elevators
-- info: Hall orders and unassigned hall orders. For redundancy of the whole system
-- HallOrderTable
-- UnassignedOrders
-- CabOrderTable
-
-SlaveKeeper
-- AliveList
 
 ### What backup has to know
 - Unassigned orders
