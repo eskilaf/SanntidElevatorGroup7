@@ -1,8 +1,112 @@
 Planning for the Elevator Project
 
-## W4 
+## W5
 
-### Plan v2
+### Questions 
+- Burde vi snakke om den utdelte heiskoden?
+
+### List of figures to make:
+-> Hvordan sørge for at det er trygt å skru på ordrelys (hovedide backup er klart). Master trenger ack fra heisen som skal ta ordre
+-> Network: idempotency and commutativity (ordning), P2P I am alive
+      korrupt: sjekk om meldingene er det samme
+-> Spontaneous crashes: Backup løsningen og at lys ikke skrus på før
+      en backup er klar og fortsatt vil huske ordren. Backup blir til master diagram. En annen case, er backup crasher
+-> unscheduled restarts: Dette er samme løsning som med crash, men vi burde spesifisere hvordan en backup reentrer.
+-> Normal operation of hall call. Det blir sekvensdiagrammet vi drev.
+-> Normal operation of cab call. Det blir sekvensdiagrammet vi drev.
+-> detection og takeover. Hvordan hall requests redistribueres
+-> Unngår Split Brain med master epoch
+-> Network topology, master slave and P2P       (lag mot slutten)
+-> Moduldiagram                     (lag mot slutten)
+
+
+### Button light contract
+- Solution:
+	- Oppdaterer backups på ny ordre før vi skrur på lyset før ordren er offisiell
+- Sekvens:
+	- Ny ordre kommer inn
+	- Ny ordre deles til amster
+	- Master regner hvilken heis
+	- Master sender ut ordre til backups
+	- Backuåps skru på sitt lys når de får ordren
+	- Master skrur på lys når den som tar ordren acker
+- Hvorfor er dette trygt ? 
+	- Når første backup har fått ordren har to enheter ordren som betyr at backup fungerer
+	- Master venter fordi den er klar over at to vet om det
+	- Om master ikke har fått ack fra heis som skal ta ordren vil ordren redistribueres
+	- Dersom ny master skal velges må alle backup sende sin nyeste state, da er det nok at bare en vet om dette for at staten bevares. 
+
+### Network Unreliability
+Må ta hensyn til:
+- Packet loss
+	- 
+- Loss of connection
+	- Ha en del av systemet der alle kommunisere "I am alive" med p2p
+	- Brukes for å holde oversikt over hvilke enheter som har kontakt med hverandre og vil brukes av master på hvilke heiser som vil motta hvilke ordre. 
+- Rekkefølge på meldinger
+	- Idempotente meldinger som angis et ordensnummer slik at rekkefølgen blir uproblematisk. Med idompotente meldinger menes med at master sender på hver ordre all informasjon som må vites som inkluderer tidligere endringer. Oversikt over hall og cab ordrer. 
+	- Hver nye ordre får en oppdatert nummer som da indikerer nyeeste ordre / state. 
+	- Master broadcaster nye ordrer slik at dersom noen ikke mottar denne vil de motta neste.
+
+### Spontanious Crashes
+- Master crasher
+	- Håndteres ved at ny backup blir til master (LAG DIAGRAM)
+	- Se diagram Casper sendte, lag denne i Draw.io
+- Backup crasher
+	- Backup sine hall orders redistribueres og ingen nye ordre til denne
+	- Når backup kommer tilbake får den tilsent sine cab orders 
+	- OrderControl burde deskrive denne situasjonen 
+	- Sekvensdiagram for ny Backup på nettverk (LAG DIAGRAM)
+		- id = ip adresse
+	
+### Detection og Takeover
+case: Oppdages av slavekeeper at backup er død
+- Heisens hall orders redistribueres, se OrderControl diagram.
+case: Ordren gjennomføres ikke innen tidsfrist
+- Det blir oppdagt og en ny heis blir satt til å ta ordren. 
+
+### Master split brain
+- Dette kommer frem i diagrammet hvord det beskrives hvordan nye master velges
+- Kort sagt handler løsningen om epoch numer og hvordan master velges 
+- Det vil here tiden være mulig å detektere en falsk master
+
+
+### Ideas (ESKIL) 26.01.26
+
+Ha med i Rapport:
+- Network protocol
+	- UDP broadcasting
+	- Master slave for order distr
+	- p2p2 for alive entity list, to know who is on the network
+- Programming language
+	- Message passing for concurrent threads
+- Diagrammer:
+	- Backup blir til master
+	- Backup crasher
+- Unscheduled restart
+- Redistribution of hall requests when one backup dies
+	- 
+
+
+Port logikk
+- port_MB //Master state broadcasting
+	- Master sender hele staten med nummerering
+	- melding = (epoch, S_num, data)
+	- Backupene tar imot meldinger på samme port
+- port_BM //Backup broadcasting
+	- Master listens på denne kanalen
+	- Backups repiterer nye beskjeder fra master
+- case BACKUP -> MASTER
+	- begynne å sende på port_MB og motta på port_BM	
+- case MASTER -> BACKUP ??? // unødvendig
+	- Dersom alle backup ikke enig i hvem som skal være master
+	- bare start programmet på nytt elns
+
+
+
+## W4
+
+### Plan  (W4)
 
 TODO
 - bestemme port logikk ved "i am alive" melding
