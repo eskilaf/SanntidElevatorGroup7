@@ -9,7 +9,6 @@ NetworkModule (provided network module)
 
 Elevator_IO (interacts with driver)
 - ElevatorStates (floor, direction, etc.)
-- FeasableState
 
 ElevatorMovement (fsm)
 
