@@ -1,7 +1,7 @@
 
 TARGET := out
 
-.PHONY: all build run test clean sim
+.PHONY: all build run test clean
 
 all: build
 
