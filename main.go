@@ -1,8 +1,19 @@
 package main
 
-import "fmt"
+import (
+	_ "ElevatorIO"
+	_ "ElevatorMovement"
+	"Network"
+	_ "OrderControl"
+	_ "Requests"
+	"RoleManager"
+	"fmt"
+)
 
 func main() {
-	fmt.Println("Main is starting")
+	fmt.Println("Hello from Main")
+
+	RoleManager.PrintMessageFromRoleManager()
+	Network.PrintMessageFromNetwork()
 
 }
