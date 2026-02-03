@@ -1,4 +1,4 @@
-package RoleManager
+package roleManager
 
 import "fmt"
 

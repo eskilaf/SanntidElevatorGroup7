@@ -1,7 +1,7 @@
 package bcast
 
 import (
-	"Network/conn"
+	"network/conn"
 	"encoding/json"
 	"fmt"
 	"net"

@@ -1,19 +1,19 @@
 package main
 
 import (
-	_ "ElevatorIO"
-	_ "ElevatorMovement"
-	"Network"
-	_ "OrderControl"
-	_ "Requests"
-	"RoleManager"
+	_ "elevatorIO"
+	_ "elevatorMovement"
 	"fmt"
+	"network"
+	_ "orderControl"
+	_ "requests"
+	"roleManager"
 )
 
 func main() {
 	fmt.Println("Hello from Main")
 
-	RoleManager.PrintMessageFromRoleManager()
-	Network.PrintMessageFromNetwork()
+	roleManager.PrintMessageFromRoleManager()
+	network.PrintMessageFromNetwork()
 
 }
