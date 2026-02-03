@@ -1,20 +1,22 @@
 
 TARGET := out
 
-.PHONY: all build run test clean
+.PHONY: all build run test clean sim
 
 all: build
 
 build: 
 	go build -o $(TARGET) main.go
 
-run: build ## Build and run the Go application
+## Build and run
+run: build 
 	./$(TARGET)
 
-test: ## Run tests with race detection
+## Run tests with race detection
+test:
 	go test -v -race ./...
 
-clean: ## Remove generated files
+## Remove generated files
+clean: 
 	go clean
 	rm -f $(TARGET)
-
